@@ -15,19 +15,19 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:derby:mydatabase;create=true";
-    private static final String USER = ""; // Set these if necessary
-    private static final String PASSWORD = "";
+    private static final String URL = "jdbc:derby:mydatabase;create=true"; // database URL
+    private static final String USER = ""; // optional user
+    private static final String PASSWORD = ""; // optional password
 
     // Method to get a new connection for each operation
     public static synchronized Connection getConnection() throws SQLException {
         try {
-            Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            connection.setAutoCommit(true); // Ensure auto-commit is enabled
-            return connection;
+            Connection connection = DriverManager.getConnection(URL, USER, PASSWORD); // establish connection
+            connection.setAutoCommit(true); // make sure auto-commit is enabled
+            return connection; // return the connection
         } catch (SQLException e) {
-            System.err.println("Error establishing connection to the database: " + e.getMessage());
-            throw e; // rethrow to handle it in your calling method
+            System.err.println("Error establishing connection to the database: " + e.getMessage()); // print error
+            throw e; // rethrow the exception to handle it elsewhere
         }
     }
 }
