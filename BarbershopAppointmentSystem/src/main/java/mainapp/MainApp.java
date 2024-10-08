@@ -16,6 +16,7 @@ import model.Service;
 
 import javax.swing.*;
 import view.PersonalDetailsPanel;
+import view.ViewBookingPanel;
 
 public class MainApp {
     private static JMenu menu;
