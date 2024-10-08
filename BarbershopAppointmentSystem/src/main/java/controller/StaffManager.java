@@ -28,90 +28,87 @@ public class StaffManager {
 
     public static void main(String[] args) {
         try {
-            StaffManager manager = new StaffManager();
+            StaffManager manager = new StaffManager(); // create a StaffManager instance
 
-            // Example usage:
+            // Example usage to add staff members:
             // manager.addStaff(new Staff("Ash Ahluwalia", "1234567890"));
             // manager.addStaff(new Staff("Ana Carolina", "0987654321"));
 
-            List<Staff> allStaff = manager.getAllStaff();
+            List<Staff> allStaff = manager.getAllStaff(); // get list of all staff
             System.out.println("All Staff Members:");
-            allStaff.forEach(System.out::println);
+            allStaff.forEach(System.out::println); // print all staff members
 
-            // Example removal:
+            // Example removal of staff by name:
             // manager.removeStaffByName("Ana Carolina");
             // manager.removeStaffByName("Ash Ahluwalia");
 
-        } catch (Exception e) {  // catches and logs any exceptions that occur
-            logger.log(Level.SEVERE, "An error occurred", e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "An error occurred", e); // log any errors that occur
         }
     }
 
-    public void addStaff(Staff staff) { // method to add a staff member to the database
-        // checks if the staff member already exists in the database
+    public void addStaff(Staff staff) {
+        // check if staff already exists before adding
         if (!isStaffExists(staff)) {
-            staff.saveToDatabase(); // if not, the staff is saved to the database
-            System.out.println("Staff '" + staff.getName() + "' added to the database."); // Confirmation message
+            staff.saveToDatabase(); // save staff to the database
+            System.out.println("Staff '" + staff.getName() + "' added to the database.");
         } else {
-            // if staff already exists, a message is displayed
             System.out.println("Staff '" + staff.getName() + "' already exists in the database.");
         }
     }
 
-public void removeStaffByName(String name) { // method to remove a staff member by name
-        // SQL query to delete staff with a specific name
+    public void removeStaffByName(String name) {
         String sql = "DELETE FROM Staff WHERE name = ?";
-        try (Connection conn = DatabaseConnection.getConnection(); //opens a connection to the database
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { //prepares the SQL statement
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, name); //sets the name parameter in the query
-            int rowsAffected = pstmt.executeUpdate(); //executes the SQL update (deletion)
+            pstmt.setString(1, name); // set the name parameter for the SQL query
+            int rowsAffected = pstmt.executeUpdate(); // execute deletion
 
-            //checks if any rows were affected (i.e., staff was found and deleted)
+            // check if any rows were affected by the deletion
             if (rowsAffected > 0) {
-                System.out.println("Staff '" + name + "' removed from the database."); //confirmation message
+                System.out.println("Staff '" + name + "' removed from the database.");
             } else {
-                System.out.println("Staff '" + name + "' not found in the database."); //message if staff was not found
+                System.out.println("Staff '" + name + "' not found in the database.");
             }
-        } catch (SQLException e) { //catches and logs any SQL exceptions
-            logger.log(Level.SEVERE, "Error removing staff from the database", e); //logs the error
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error removing staff from the database", e); // log errors if any
         }
     }
 
-    private boolean isStaffExists(Staff staff) { //method to check if a staff member already exists
-        //SQL query to count how many staff members match the name and contact number
+    private boolean isStaffExists(Staff staff) {
         String sql = "SELECT COUNT(*) FROM Staff WHERE name = ? AND contactNumber = ?";
-        try (Connection conn = DatabaseConnection.getConnection(); //opens a connection to the database
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { //prepares the SQL query
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, staff.getName()); //sets the name parameter in the query
-            pstmt.setString(2, staff.getContactNumber()); //sets the contact number parameter in the query
+            pstmt.setString(1, staff.getName()); // set the name parameter
+            pstmt.setString(2, staff.getContactNumber()); // set the contact number parameter
 
-            try (ResultSet rs = pstmt.executeQuery()) { //executes the query and gets the result set
-                if (rs.next()) { //moves to the first row in the result set
-                    return rs.getInt(1) > 0; //returns true if the count is greater than 0 (staff exists)
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // check if count is greater than 0
                 }
             }
-        } catch (SQLException e) { //catches and logs any SQL exceptions
-            logger.log(Level.SEVERE, "Error checking if staff exists in the database", e); //logs the error
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error checking if staff exists in the database", e); // log errors
         }
-        return false; //returns false if staff doesnt exist or if an error occurred
+        return false; // return false if staff doesn't exist
     }
 
-    public List<Staff> getAllStaff() { //method to retrieve all staff members from the database
-        List<Staff> staffList = new ArrayList<>(); //creates an empty list to store staff
-        String sql = "SELECT * FROM Staff"; //SQL query to select all staff members
+    public List<Staff> getAllStaff() {
+        List<Staff> staffList = new ArrayList<>(); // create an empty list to store staff
+        String sql = "SELECT * FROM Staff"; // query to get all staff
 
-        try (Connection conn = DatabaseConnection.getConnection(); //opens a connection to the database
-             Statement stmt = conn.createStatement(); //creates a statement object
-             ResultSet rs = stmt.executeQuery(sql)) { //executes the SQL query and gets the result set
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while (rs.next()) { //iterates through each row in the result set
-                staffList.add(Staff.fromResultSet(rs)); //adds each staff to the list using the 'fromResultSet' method
+            while (rs.next()) {
+                staffList.add(Staff.fromResultSet(rs)); // add each staff member to the list
             }
-        } catch (SQLException e) { //catches and logs any SQL exceptions
-            logger.log(Level.SEVERE, "Error loading staff from the database", e); //logs the error
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error loading staff from the database", e); // log errors
         }
-        return staffList; //returns the list of staff
+        return staffList; // return the list of staff
     }
 }

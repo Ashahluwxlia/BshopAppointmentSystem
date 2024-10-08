@@ -17,20 +17,21 @@ import java.util.Date;
 
 public class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
 
-    private String datePattern = "dd/MM/yyyy";
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+    private String datePattern = "dd/MM/yyyy"; // pattern for date format
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern); // formatter using the pattern
 
     @Override
     public Object stringToValue(String text) throws ParseException {
+        // convert string input to a date object
         return dateFormatter.parseObject(text);
     }
 
     @Override
     public String valueToString(Object value) throws ParseException {
         if (value != null) {
-            Calendar cal = (Calendar) value;
-            return dateFormatter.format(cal.getTime());
+            Calendar cal = (Calendar) value; // cast the object to a calendar
+            return dateFormatter.format(cal.getTime()); // format the calendar's date to string
         }
-        return "";
+        return ""; // return empty string if value is null
     }
 }
